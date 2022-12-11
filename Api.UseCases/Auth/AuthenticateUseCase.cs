@@ -10,7 +10,6 @@ public class AuthenticateUseCase : IAuthenticateUseCase
     private readonly ICachingService _cache;
     private readonly ILockingService _lockingService;
     private readonly ITokenService _tokenService;
-    private const int EXPIRES_IN_MINUTES = 20;
 
     public AuthenticateUseCase(
         Settings settings, ICachingService cache, ILockingService lockingService, ITokenService tokenService)
@@ -42,7 +41,7 @@ public class AuthenticateUseCase : IAuthenticateUseCase
                 return token;
             }
 
-            var newToken = _tokenService.Generate(accessCredentials.Username, EXPIRES_IN_MINUTES);
+            var newToken = _tokenService.Generate(accessCredentials.Username, _settings.TokenExpirationInMinutes);
 
             var expiration = newToken.ExpiresIn.Subtract(DateTime.UtcNow);
             await _cache.SetAsync<Token>(accessCredentials.Username, newToken, expiration);

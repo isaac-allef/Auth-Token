@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  redis:
+      image: redis
+      container_name: auth-token-redis
+      command: bash -c "redis-server --appendonly yes"
+      ports:
+          - 6379:6379
+      restart: always
+      volumes:
+        - ./redis-volume:/data
+        
+  app:
+    build: 
+      context: .
+      dockerfile: ./Api/Dockerfile
+    container_name: auth-token-app
+    ports:
+      - 5000:80
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - UseRedis=true
+      - RedisConnectionString=redis:6379
+      - TokenExpirationInMinutes=20
+      - Secret=:q)r9qi`>.Fs,r~!5?_~yP/u=.yryHEXTGVRC|fFwq%]!/3,q(b]BcYK]08x#<7
+      - MyAccessCredentials:service-client1=password1
+      - MyAccessCredentials:service-client2=password2

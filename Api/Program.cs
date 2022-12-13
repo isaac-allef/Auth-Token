@@ -73,7 +73,11 @@ if (!useRedis)
 }
 else
 {
-    builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = settings.RedisConnectionString;
+        options.InstanceName = "instance";
+    });
     builder.Services.AddScoped<ICachingService, CachingDistributedRedisService>();
     var redisConnection = await ConnectionMultiplexer.ConnectAsync(settings.RedisConnectionString);
     builder.Services.AddSingleton<ILockingService>(new LockingDistributedRedisService(redisConnection));
